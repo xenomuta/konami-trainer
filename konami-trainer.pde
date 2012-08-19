@@ -25,14 +25,12 @@
 #define NES_A 0x7F
 #define NES_NONE 0xFF
 
+// Set to true for Serial port debugging. Good for n00bs
 #define DEBUG true
 
-/* INITIALIZATI
- 
- ON */
 int clock = 12; // set the clock pin
 int latch = 11; // set the latch pin
-int datin = 4; // set the data in pin
+int datin = 4;  // set the data in pin
 
 byte controller_data = 0;
 
@@ -44,7 +42,6 @@ int konami_offset = 0, konami_time, konami_code[] = {
   NES_UP, NES_UP, NES_DOWN, NES_DOWN, NES_LEFT, NES_RIGHT, NES_LEFT, NES_RIGHT, NES_B, NES_A
 };
 
-/* SETUP */
 void setup() {
   if (DEBUG) {
     Serial.begin(57600);
@@ -60,7 +57,6 @@ void setup() {
   digitalWrite(clock,HIGH);
 }
 
-/* THIS READS DATA FROM THE CONTROLLER */
 void controllerRead() {
   controller_data = 0;
   digitalWrite(latch,LOW);
@@ -126,15 +122,15 @@ void loop() {
   cambio = button_down != cambio;
   
   if (button_down && cambio && controller_data == konami_code[konami_offset]) {
-   if (konami_offset == 0) konami_time = millis();
-   if (millis() - konami_time < 500) {
-   if (++konami_offset == 10) {
-   konami_offset = 0;
-   digitalWrite(ledpin, (ledstatus = !ledstatus));
-   if (DEBUG) Serial.println("Konami!!!!");
-   }
-   } else konami_offset = 0;
-   konami_time = millis();
+    if (konami_offset == 0) konami_time = millis();
+    if (millis() - konami_time < 500) {
+      if (++konami_offset == 10) {
+        konami_offset = 0;
+        digitalWrite(ledpin, (ledstatus = !ledstatus));
+        if (DEBUG) Serial.println("Konami Code detected!!!!");
+      }
+    } else konami_offset = 0;
+    konami_time = millis();
   }
   
   delay(10);
